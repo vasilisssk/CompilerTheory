@@ -1,0 +1,81 @@
+%import common.CNAME -> CNAME
+%import common.INT -> INT
+%import common.WS
+
+%ignore WS
+
+COMMENT_1: /\{[^}]*\}/
+COMMENT_2: /\/\/[^\n]*/
+COMMENT_3: /\(\*([\s\S]*?)\*\)/
+%ignore COMMENT_1
+%ignore COMMENT_2
+%ignore COMMENT_3
+
+CHAR: /'([^'\\]|\\.)'/
+IDENT: CNAME
+TYPE_NAME: "integer" | "char" | "boolean"
+FOR_DIR: "to" | "downto"
+BUILTIN_NAME: "read" | "readln" | "write" | "writeln"
+
+program_rule: "program" IDENT ";" block_rule "."
+block_rule: var_section_rule? compound_stmt_rule
+var_section_rule: "var" var_decl_rule+
+var_decl_rule: ident_list_rule ":" TYPE_NAME ";"
+ident_list_rule: IDENT ("," IDENT)*
+
+compound_stmt_rule: "begin" stmt_list_rule? "end"
+stmt_list_rule: stmt_rule (";" stmt_rule)* ";"?
+
+?stmt_rule: compound_stmt_rule
+    | if_stmt_rule
+    | while_stmt_rule
+    | for_stmt_rule
+    | break_stmt_rule
+    | continue_stmt_rule
+    | assign_stmt_rule
+    | call_stmt_rule
+
+if_stmt_rule: "if" expr_rule "then" stmt_rule ("else" stmt_rule)?
+while_stmt_rule: "while" expr_rule "do" stmt_rule
+for_stmt_rule: "for" IDENT ":=" expr_rule FOR_DIR expr_rule "do" stmt_rule
+break_stmt_rule: "break"
+continue_stmt_rule: "continue"
+assign_stmt_rule: IDENT ":=" expr_rule
+call_stmt_rule: call_rule
+
+?expr_rule: or_expr_rule
+?or_expr_rule: and_expr_rule
+    | or_expr_rule "or" and_expr_rule   -> bin_or_rule
+?and_expr_rule: rel_expr_rule
+    | and_expr_rule "and" rel_expr_rule -> bin_and_rule
+?rel_expr_rule: add_expr_rule
+    | add_expr_rule "=" add_expr_rule   -> bin_eq_rule
+    | add_expr_rule "<>" add_expr_rule  -> bin_ne_rule
+    | add_expr_rule "<=" add_expr_rule  -> bin_le_rule
+    | add_expr_rule "<" add_expr_rule   -> bin_lt_rule
+    | add_expr_rule ">=" add_expr_rule  -> bin_ge_rule
+    | add_expr_rule ">" add_expr_rule   -> bin_gt_rule
+?add_expr_rule: mul_expr_rule
+    | add_expr_rule "+" mul_expr_rule   -> bin_add_rule
+    | add_expr_rule "-" mul_expr_rule   -> bin_sub_rule
+?mul_expr_rule: unary_expr_rule
+    | mul_expr_rule "*" unary_expr_rule -> bin_mul_rule
+    | mul_expr_rule "/" unary_expr_rule -> bin_float_div_rule
+    | mul_expr_rule "div" unary_expr_rule -> bin_int_div_rule
+    | mul_expr_rule "mod" unary_expr_rule -> bin_mod_rule
+?unary_expr_rule: primary_rule
+    | "not" unary_expr_rule        -> un_not_rule
+    | "+" unary_expr_rule          -> un_plus_rule
+    | "-" unary_expr_rule          -> un_minus_rule
+
+?primary_rule: INT                   -> int_lit_rule
+    | CHAR                      -> char_lit_rule
+    | "true"                   -> true_lit_rule
+    | "false"                  -> false_lit_rule
+    | call_rule
+    | IDENT                     -> ident_rule
+    | "(" expr_rule ")"
+
+call_rule: call_name_rule "(" arg_list_rule? ")"
+call_name_rule: IDENT | BUILTIN_NAME
+arg_list_rule: expr_rule ("," expr_rule)*
