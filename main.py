@@ -1,4 +1,4 @@
-from src.pascal.parser import PascalParser
+from src.pascal.parser import PascalParser, PascalParserError
 from src.ast.builder import dump_ast
 
 
@@ -44,10 +44,14 @@ def main():
                 end.
                 '''
 
-    parser = PascalParser(text)
-    program = parser.parse_program()
+    try:
+        parser = PascalParser(text)
+        program = parser.parse_program()
 
-    print(dump_ast(program))
+        print(dump_ast(program))
+
+    except PascalParserError as e:
+        print("Parser error:", e)
 
 
 if __name__ == "__main__":
