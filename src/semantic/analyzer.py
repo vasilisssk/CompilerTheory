@@ -106,7 +106,6 @@ class SemanticAnalyzer:
         if start_type != "integer" or end_type != "integer":
             raise SemanticError("Границы цикла for должны быть integer", node)
 
-        # ✅ ИСПРАВЛЕНИЕ: проверяем существующую переменную, а не создаём новую
         var_type = self._current_scope().lookup(node.ident.name)
         if var_type is None:
             raise SemanticError(f"Переменная цикла '{node.ident.name}' не объявлена", node)

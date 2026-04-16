@@ -1,0 +1,11 @@
+program IfExample;
+var
+  a, b: integer;
+begin
+  a := 5;
+  b := 10;
+  if a < b then
+    writeln(1)
+  else
+    writeln(0)
+end.

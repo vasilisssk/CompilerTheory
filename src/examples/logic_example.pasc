@@ -1,0 +1,13 @@
+program LogicExample;
+var
+  p, q: boolean;
+  result: boolean;
+begin
+  p := true;
+  q := false;
+  result := (p and not q) or (not p and q);
+  if result then
+    writeln(1)
+  else
+    writeln(0)
+end.

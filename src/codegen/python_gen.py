@@ -36,7 +36,6 @@ class PythonCodeGenerator:
         self.visit(node.body)
 
     def visit_VarDecl(self, node: ast.VarDecl):
-        # Python не требует объявления, но оставляем комментарий для отладки
         self._push(f"# var {node.ident.name}: {node.type_name}")
 
     def visit_CompoundStmt(self, node: ast.CompoundStmt):

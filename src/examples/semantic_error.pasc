@@ -1,0 +1,7 @@
+program SemanticError;
+var
+  a: integer;
+  b: boolean;
+begin
+  b := a
+end.

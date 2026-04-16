@@ -1,0 +1,12 @@
+program ReadExample;
+var
+  age: integer;
+  letter: char;
+begin
+  write(0);
+  read(age);
+  write(0);
+  read(letter);
+  writeln(age);
+  writeln(letter)
+end.
